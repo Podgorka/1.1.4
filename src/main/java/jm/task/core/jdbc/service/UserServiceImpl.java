@@ -1,10 +1,22 @@
 package jm.task.core.jdbc.service;
 
+import jm.task.core.jdbc.Main;
 import jm.task.core.jdbc.model.User;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
-public class UserServiceImpl implements UserService {
+import static jm.task.core.jdbc.util.Util.getConnection;
+
+public class UserServiceImpl extends Main implements UserService {
+    Connection connection = getConnection();
+
+    public UserServiceImpl() throws SQLException {
+    }
+
     public void createUsersTable() {
 
     }
@@ -13,7 +25,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public void saveUser(String name, String lastName, byte age) {
+    public void saveUser(String name, String lastName, byte age) throws SQLException {
 
     }
 
@@ -25,7 +37,9 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
-    public void cleanUsersTable() {
-
+    public void cleanUsersTable() throws SQLException {
+        Statement statement = null;
+        String sql = "TRUNCATE  user";
+        statement.executeUpdate(sql);
     }
 }
