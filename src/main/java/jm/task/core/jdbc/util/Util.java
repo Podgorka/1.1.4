@@ -5,15 +5,30 @@ import java.sql.SQLException;
 
 public class Util {
 
-    public static Connection getConnection() throws SQLException {
-        final String sqlCommand = "CREATE TABLE IF NOT EXISTS User (id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(50), lastName VARCHAR(50), age TINYINT )";
-        final String userName = "root";
-        final String passWord = "root";
-        final String connectionUrl = "jdbc:mysql://localhost:3306/test";
-        Connection connection = DriverManager.getConnection(connectionUrl, userName, passWord);
-        connection.setAutoCommit(false);
-        connection.commit();
+    private static final Connection connection;
+    static {
+        try {
+            final String connectionUrl = "jdbc:mysql://localhost:3306/test";
+            final String userName = "root";
+            final String passWord = "root";
+            connection = DriverManager.getConnection(connectionUrl, userName, passWord);
+            connection.setAutoCommit(false);
+            connection.commit();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static Connection getConnection() {
         return connection;
     }
+//    public static Connection getConnection() throws SQLException {
+//        final String userName = "root";
+//        final String passWord = "root";
+//        final String connectionUrl = "jdbc:mysql://localhost:3306/test";
+//        Connection connection = DriverManager.getConnection(connectionUrl, userName, passWord);
+//        connection.setAutoCommit(false);
+//        connection.commit();
+//        return connection;
+//    }
 }
 

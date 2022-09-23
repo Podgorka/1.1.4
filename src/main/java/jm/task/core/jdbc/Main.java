@@ -1,13 +1,13 @@
 package jm.task.core.jdbc;
 import jm.task.core.jdbc.service.UserServiceImpl;
-import jm.task.core.jdbc.util.Util;
-
 import java.sql.SQLException;
+
+import static jm.task.core.jdbc.util.Util.getConnection;
 
 
 public class Main {
     public static void main(String[] args) throws SQLException {
-        Util.getConnection();
+        getConnection();
         UserServiceImpl usi = new UserServiceImpl();
         usi.createUsersTable();
         usi.saveUser("имя1", "фамилия1", (byte) 3);
