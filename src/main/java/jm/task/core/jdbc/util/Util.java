@@ -5,12 +5,13 @@ import java.sql.SQLException;
 
 public class Util {
 
-    private static final Connection connection;
-    static {
+    private final Connection connection;
+    private static volatile Util instance;
+    final String connectionUrl = "jdbc:mysql://localhost:3306/test";
+    final String userName = "root";
+    final String passWord = "root";
+    private Util() {
         try {
-            final String connectionUrl = "jdbc:mysql://localhost:3306/test";
-            final String userName = "root";
-            final String passWord = "root";
             connection = DriverManager.getConnection(connectionUrl, userName, passWord);
             connection.setAutoCommit(false);
             connection.commit();
@@ -18,17 +19,20 @@ public class Util {
             throw new RuntimeException(e);
         }
     }
-    public static Connection getConnection() {
+    public Connection getConnection() {
         return connection;
     }
-//    public static Connection getConnection() throws SQLException {
-//        final String userName = "root";
-//        final String passWord = "root";
-//        final String connectionUrl = "jdbc:mysql://localhost:3306/test";
-//        Connection connection = DriverManager.getConnection(connectionUrl, userName, passWord);
-//        connection.setAutoCommit(false);
-//        connection.commit();
-//        return connection;
-//    }
+    public static Util getInstance() {
+        if (instance == null) {
+            synchronized (Util.class) {
+                if (instance == null) {
+                    instance = new Util();
+                }
+            }
+        }
+        return instance;
+    }
 }
+
+
 

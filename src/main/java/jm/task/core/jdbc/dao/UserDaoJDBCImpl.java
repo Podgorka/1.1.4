@@ -20,7 +20,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     }
 
-    Connection connection = Util.getConnection();
+    Connection connection = Util.getInstance().getConnection();
     public void createUsersTable() throws SQLException {
         Statement statement;
         try {
@@ -38,9 +38,8 @@ public class UserDaoJDBCImpl implements UserDao {
         Statement statement;
         try {
             statement = connection.createStatement();
-            String sql = "DROP TABLE user";
-            statement.executeUpdate(sql);
-            System.out.println("drop");
+            String sql = "DROP TABLE IF EXISTS user";
+            statement.execute(sql);
             connection.commit();
         } catch (SQLException e) {
             connection.rollback();
@@ -93,7 +92,7 @@ public class UserDaoJDBCImpl implements UserDao {
                 classUser.setAge(resultSet.getByte(4));
                 users.add(classUser);
             }
-            System.out.println(users.toString());
+            System.out.println(users);
             connection.commit();
             return users;
         } catch (SQLException e) {
