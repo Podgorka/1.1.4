@@ -7,15 +7,13 @@ import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.hibernate.query.criteria.HibernateCriteriaBuilder;
-
-import java.sql.SQLException;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
     public UserDaoHibernateImpl() {
 
     }
-    Session session = Util.HibernateUtil.getSessionFactory().openSession();
+
 
     @Override
     public void createUsersTable() {
@@ -28,57 +26,91 @@ public class UserDaoHibernateImpl implements UserDao {
     }
 
     @Override
-    public void saveUser(String name, String lastName, byte age) throws SQLException {
+    public void saveUser(String name, String lastName, byte age) {
+        Session session = null;
         try {
+            session = Util.HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             session.save(new User(name, lastName, age));
             session.getTransaction().commit();
         } catch (RuntimeException e) {
-            session.getTransaction().rollback();
+            if (session != null) {
+                session.getTransaction().rollback();
+            }
             throw new RuntimeException(e);
+        } finally {
+            if (session != null) {
+                session.close();
+            }
         }
+
     }
 
     @Override
     public void removeUserById(long id) {
+        Session session = null;
         try {
+            session = Util.HibernateUtil.getSessionFactory().openSession();
             User user = session.get(User.class, id);
             session.beginTransaction();
             session.remove(user);
             session.getTransaction().commit();
         } catch (RuntimeException e) {
-            session.getTransaction().rollback();
+            if (session != null) {
+                session.getTransaction().rollback();
+            }
             throw new RuntimeException(e);
+        } finally {
+            if (session != null) {
+                session.close();
+            }
         }
+
     }
 
 
     @Override
     public List<User> getAllUsers() {
+        Session session = null;
         try {
+            session = Util.HibernateUtil.getSessionFactory().openSession();
             HibernateCriteriaBuilder cb = session.getCriteriaBuilder();
-            CriteriaQuery cq = cb.createQuery(User.class);
+            CriteriaQuery<User> cq = cb.createQuery(User.class);
             Root<User> root = cq.from(User.class);
             cq.select(root);
-            Query query = session.createQuery(cq);
+            Query<User> query = session.createQuery(cq);
             List<User> users = query.getResultList();
             System.out.println(users);
             return users;
         } catch (RuntimeException e) {
-            session.getTransaction().rollback();
+            if (session != null) {
+                session.getTransaction().rollback();
+            }
             throw new RuntimeException(e);
+        }  finally {
+            if (session != null) {
+                session.close();
+            }
         }
     }
 
     @Override
     public void cleanUsersTable() {
+        Session session = null;
         try {
+            session = Util.HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
             session.createQuery("DELETE FROM User ").executeUpdate();
             session.getTransaction().commit();
         } catch (RuntimeException e) {
-            session.getTransaction().rollback();
+            if (session != null) {
+                session.getTransaction().rollback();
+            }
             throw new RuntimeException(e);
+        } finally {
+            if (session != null) {
+                session.close();
+            }
         }
     }
 }
